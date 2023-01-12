@@ -2,22 +2,12 @@ import os
 import requests
 import time
 import util
+import config
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-dir_output = 'output/'
-
-custom_headers = {
-    'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
-    'cookie': 'sessionid=v8but91g9z6mpvwijnrov1nh7evwlqpd; current_user=dayomi; _hjSessionUser_3251788=eyJpZCI6IjNmZDdjZjE2LTBmN2ItNTlkMy05MDM2LTAzNGE5OGFjZjA2YSIsImNyZWF0ZWQiOjE2NzMzOTgwOTQ5ODcsImV4aXN0aW5nIjp0cnVlfQ==; csrftoken=GS4bUiUxOyMMQHoMFNj2Z8WdFv0eeYouZfU7kWnY4iHD7NFJs1S7lDelP2CPCscB; _gid=GA1.2.109501274.1673398107; _ga_6HBPNX8FC2=GS1.1.1673398094.1.1.1673399130.0.0.0; _ga=GA1.2.687922305.1673398094; _gat=1'
-}
-base_url = 'https://www.kidsnote.com'
-report_url = base_url + '/reports' + '/'
-alnums_url = base_url + '/albums' + '/'
-
-
 # 알림장 마지막 페이지 구하기
-res = requests.get(report_url, headers=custom_headers)
+res = requests.get(config.REPORT_URL, headers=config.CUSTOM_HEADERS)
 soup = BeautifulSoup(res.content, 'html.parser')
 page_list = soup.find_all('a', class_='page-link')
 
@@ -31,8 +21,8 @@ page = 0
 while page <= int(last_page):
     page = page + 1
     # 알림장 페이지 별 목록
-    report_page_url = report_url + '?page=' + str(page)
-    res = requests.get(report_page_url, headers=custom_headers)
+    report_page_url = config.REPORT_URL + '?page=' + str(page)
+    res = requests.get(report_page_url, headers=config.CUSTOM_HEADERS)
 
     soup = BeautifulSoup(res.content, 'html.parser')
     a_list = soup.find('div', class_='report-list-wrapper').find_all('a')
@@ -43,8 +33,8 @@ while page <= int(last_page):
 
     for href_item in href_list:
         # 알림장 상세 페이지
-        detail_url = base_url + href_item
-        res = requests.get(detail_url, headers=custom_headers)
+        detail_url = config.BASE_URL + href_item
+        res = requests.get(detail_url, headers=config.CUSTOM_HEADERS)
         soup = BeautifulSoup(res.content, 'html.parser')
 
         # 타이틀, 본문
@@ -57,7 +47,7 @@ while page <= int(last_page):
         exit()
 
         # 타이틀 명으로 폴더 생성
-        path = dir_output + title + '/'
+        path = OUTPUT_ROOT + title + '/'
         util.createFolder(path)
 
         # 본문 이쁘게
