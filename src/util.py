@@ -4,7 +4,7 @@ import browser_cookie3
 
 # 파일 저장
 def SaveFile(filename, content):
-    f = open(filename, 'w', encoding='utf-8',)
+    f = open(filename, 'w', encoding='utf-8')
     f.write(content)
     f.close()
 
@@ -21,7 +21,9 @@ def createFolder(path):
 def getCookiesFromDomain(domain, cookieName=''):
 
     Cookies = {}
-    chromeCookies = list(browser_cookie3.chrome())
+    path_cookies = os.path.join(os.path.expandvars(
+        "%userprofile%"), "AppData\\Local\\Google\\Chrome\\User Data\\Profile 7\\Network\\Cookies")
+    chromeCookies = list(browser_cookie3.chrome(cookie_file=path_cookies))
 
     for cookie in chromeCookies:
 

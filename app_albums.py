@@ -12,6 +12,8 @@ print(f'앨범 시작')
 # 앨범 마지막 페이지 구하기
 res = requests.get(config.ALNUMS_URL, headers=config.CUSTOM_HEADERS)
 soup = BeautifulSoup(res.content, 'html.parser')
+
+
 page_list = soup.find_all('a', class_='page-link')
 
 number = 0
@@ -99,6 +101,19 @@ while page <= int(last_page):
         print(f'{filename} 생성')
         util.SaveFile(filename, report)
 
+        # 동영상 다운로드
+        video_section = soup.find('div', class_='video-section')
+        if video_section is not None:
+            source = soup.find('source')['src']
+
+            download_url = source
+            name, ext = os.path.splitext(download_url)
+            video_name = sCreated_at + ext
+            fullPath = path + video_name
+
+            print(f'{fullPath} 생성')
+            os.system(f'curl "{download_url}" --output {fullPath}')
+
         # 이미지 다운로드
         img_grid = soup.find('div', class_='image-section')
         if img_grid is not None:
@@ -107,7 +122,6 @@ while page <= int(last_page):
                 download_url = img.find('a')['data-download']
                 name, ext = os.path.splitext(download_url)
                 img_name = sCreated_at + '-' + img['data-index'] + ext
-                start = time.time()
 
                 fullPath = path + img_name
                 res = requests.get(download_url)
