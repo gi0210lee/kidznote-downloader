@@ -7,10 +7,10 @@ import re
 from datetime import datetime
 from bs4 import BeautifulSoup
 
-print(f'시작')
+print(f'앨범 시작')
 
-# 알림장 마지막 페이지 구하기
-res = requests.get(config.REPORT_URL, headers=config.CUSTOM_HEADERS)
+# 앨범 마지막 페이지 구하기
+res = requests.get(config.ALNUMS_URL, headers=config.CUSTOM_HEADERS)
 soup = BeautifulSoup(res.content, 'html.parser')
 page_list = soup.find_all('a', class_='page-link')
 
@@ -24,12 +24,12 @@ page = 0
 while page <= int(last_page):
     page = page + 1
 
-    # 알림장 페이지 별 목록
-    report_page_url = config.REPORT_URL + '?page=' + str(page)
-    res = requests.get(report_page_url, headers=config.CUSTOM_HEADERS)
+    # 앨범 페이지 별 목록
+    albums_page_url = config.ALNUMS_URL + '?page=' + str(page)
+    res = requests.get(albums_page_url, headers=config.CUSTOM_HEADERS)
 
     soup = BeautifulSoup(res.content, 'html.parser')
-    a_list = soup.find('div', class_='report-list-wrapper').find_all('a')
+    a_list = soup.find('div', class_='album-list-wrapper').find_all('a')
 
     href_list = []
     for href in a_list:
@@ -41,16 +41,26 @@ while page <= int(last_page):
         res = requests.get(detail_url, headers=config.CUSTOM_HEADERS)
         soup = BeautifulSoup(res.content, 'html.parser')
 
-        # 타이틀(날짜 추출)
+        # 등록일 추출
+        sCreated_at = soup.find('span', class_='date').text.strip()
+        sCreated_at_list = re.findall(r'\d+', sCreated_at)
+        sCreated_at = sCreated_at_list[0] + \
+            sCreated_at_list[1].zfill(2) + sCreated_at_list[2].zfill(
+                2) + sCreated_at_list[3].zfill(2) + sCreated_at_list[4].zfill(2)
+        dtCreated_at = datetime.strptime(sCreated_at, '%Y%m%d%I%M')
+        sCreated_at = datetime.strftime(dtCreated_at, '%Y%m%d%I%M')
+
+        # 타이틀(제목 추출)
         sTitle = soup.find('h3', class_='sub-header-title').text.strip()
-        sTitle_list = re.findall(r'\d+', sTitle)
-        sTitle = sTitle_list[0] + \
-            sTitle_list[1].zfill(2) + sTitle_list[2].zfill(2)
-        dtTitle = datetime.strptime(sTitle, '%Y%m%d')
-        title = datetime.strftime(dtTitle, '%Y-%m-%d')
+
+        # sTitle_list = re.findall(r'\d+', sTitle)
+        # sTitle = sTitle_list[0] + \
+        #     sTitle_list[1].zfill(2) + sTitle_list[2].zfill(2)
+        # dtTitle = datetime.strptime(sTitle, '%Y%m%d')
+        # title = datetime.strftime(dtTitle, '%Y-%m-%d')
 
         # 타이틀 명으로 폴더 생성
-        path = config.OUTPUT_ROOT + title + '/'
+        path = config.OUTPUT_ROOT + 'albums/' + sCreated_at + '/'
         util.createFolder(path)
 
         # 본문 이쁘게
@@ -80,8 +90,9 @@ while page <= int(last_page):
             comment_body = '\n'.join(comment_body_list)
 
         # 텍스트 파일로 본문 댓글 저장
-        filename = path + title + '.txt'
-        report = '🕧 일시' + '\n' + title + '\n\n' + \
+        filename = path + sCreated_at + '.txt'
+        report = '🕧 일시' + '\n' + sCreated_at + '\n\n' + \
+            '🟠 제목' + '\n' + sTitle + '\n\n' + \
             '🟠 본문' + '\n' + content_body + '\n\n' + \
             '🟠 댓글' + '\n' + comment_body
 
@@ -95,7 +106,7 @@ while page <= int(last_page):
             for img in imgs:
                 download_url = img.find('a')['data-download']
                 name, ext = os.path.splitext(download_url)
-                img_name = title + '-' + img['data-index'] + ext
+                img_name = sCreated_at + '-' + img['data-index'] + ext
                 start = time.time()
 
                 fullPath = path + img_name
