@@ -1,10 +1,13 @@
 import os
 import requests
 import time
-import util
-import config
+from src import util
+from src import config
+import re
 from datetime import datetime
 from bs4 import BeautifulSoup
+
+print(f'시작')
 
 # 알림장 마지막 페이지 구하기
 res = requests.get(config.REPORT_URL, headers=config.CUSTOM_HEADERS)
@@ -20,6 +23,7 @@ last_page = page_list[number - 2].text
 page = 0
 while page <= int(last_page):
     page = page + 1
+
     # 알림장 페이지 별 목록
     report_page_url = config.REPORT_URL + '?page=' + str(page)
     res = requests.get(report_page_url, headers=config.CUSTOM_HEADERS)
@@ -37,17 +41,16 @@ while page <= int(last_page):
         res = requests.get(detail_url, headers=config.CUSTOM_HEADERS)
         soup = BeautifulSoup(res.content, 'html.parser')
 
-        # 타이틀, 본문
+        # 타이틀(날짜 추출)
         sTitle = soup.find('h3', class_='sub-header-title').text.strip()
-        # dtTitle = datetime.strptime(sTitle, '%Y년 %m월 %d일 %A')
-        print(sTitle)
-        # title = datetime.strftime(dtTitle, '%Y%m%d')
-        # print(Title)
-
-        exit()
+        sTitle_list = re.findall(r'\d+', sTitle)
+        sTitle = sTitle_list[0] + \
+            sTitle_list[1].zfill(2) + sTitle_list[2].zfill(2)
+        dtTitle = datetime.strptime(sTitle, '%Y%m%d')
+        title = datetime.strftime(dtTitle, '%Y-%m-%d')
 
         # 타이틀 명으로 폴더 생성
-        path = OUTPUT_ROOT + title + '/'
+        path = config.OUTPUT_ROOT + title + '/'
         util.createFolder(path)
 
         # 본문 이쁘게
@@ -72,15 +75,17 @@ while page <= int(last_page):
                 for s in commentString:
                     commentString_list.append(s.text)
                 commentStr = '\n'.join(commentString_list)
-                comment_body_list.append(comment_author + '\n' +
+                comment_body_list.append('↪️' + comment_author + '\n' +
                                          comment_time + '\n' + commentStr + '\n')
             comment_body = '\n'.join(comment_body_list)
 
         # 텍스트 파일로 본문 댓글 저장
         filename = path + title + '.txt'
-        report = 'ㅁ 일시' + '\n' + title + '\n\n' + \
-            'ㅁ 본문' + '\n' + content_body + '\n\n' + \
-            'ㅁ 댓글' + '\n' + comment_body
+        report = '🕧 일시' + '\n' + title + '\n\n' + \
+            '🟠 본문' + '\n' + content_body + '\n\n' + \
+            '🟠 댓글' + '\n' + comment_body
+
+        print(f'{filename} 생성')
         util.SaveFile(filename, report)
 
         # 이미지 다운로드
@@ -95,4 +100,8 @@ while page <= int(last_page):
 
                 fullPath = path + img_name
                 res = requests.get(download_url)
+
+                print(f'{fullPath} 생성')
                 os.system(f'curl "{download_url}" --output {fullPath}')
+
+print(f'종료')
