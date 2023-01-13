@@ -6,13 +6,14 @@ from src import config
 import re
 from datetime import datetime
 from bs4 import BeautifulSoup
+import imgkit
+from html2image import Html2Image
 
 print(f'앨범 시작')
 
 # 앨범 마지막 페이지 구하기
 res = requests.get(config.ALNUMS_URL, headers=config.CUSTOM_HEADERS)
 soup = BeautifulSoup(res.content, 'html.parser')
-
 
 page_list = soup.find_all('a', class_='page-link')
 
@@ -29,7 +30,6 @@ while page <= int(last_page):
     # 앨범 페이지 별 목록
     albums_page_url = config.ALNUMS_URL + '?page=' + str(page)
     res = requests.get(albums_page_url, headers=config.CUSTOM_HEADERS)
-
     soup = BeautifulSoup(res.content, 'html.parser')
     a_list = soup.find('div', class_='album-list-wrapper').find_all('a')
 
@@ -54,12 +54,6 @@ while page <= int(last_page):
 
         # 타이틀(제목 추출)
         sTitle = soup.find('h3', class_='sub-header-title').text.strip()
-
-        # sTitle_list = re.findall(r'\d+', sTitle)
-        # sTitle = sTitle_list[0] + \
-        #     sTitle_list[1].zfill(2) + sTitle_list[2].zfill(2)
-        # dtTitle = datetime.strptime(sTitle, '%Y%m%d')
-        # title = datetime.strftime(dtTitle, '%Y-%m-%d')
 
         # 타이틀 명으로 폴더 생성
         path = config.OUTPUT_ROOT + 'albums/' + sCreated_at + '/'
@@ -86,20 +80,34 @@ while page <= int(last_page):
                 commentString_list = []
                 for s in commentString:
                     commentString_list.append(s.text)
-                commentStr = '\n'.join(commentString_list)
-                comment_body_list.append('↪️' + comment_author + '\n' +
-                                         comment_time + '\n' + commentStr + '\n')
-            comment_body = '\n'.join(comment_body_list)
+                commentStr = '<br/>'.join(commentString_list)
+                comment_body_list.append('↪️' + comment_author + '<br/>' +
+                                         comment_time + '<br/>' + commentStr + '<br/>')
+            comment_body = '<br/>'.join(comment_body_list)
 
         # 텍스트 파일로 본문 댓글 저장
-        filename = path + sCreated_at + '.txt'
-        report = '🕧 일시' + '\n' + sCreated_at + '\n\n' + \
-            '🟠 제목' + '\n' + sTitle + '\n\n' + \
-            '🟠 본문' + '\n' + content_body + '\n\n' + \
-            '🟠 댓글' + '\n' + comment_body
+        # filename = path + sCreated_at + '.txt'
+        # report = '🕧 일시' + '\n' + sCreated_at + '\n\n' + \
+        #     '🟠 제목' + '\n' + sTitle + '\n\n' + \
+        #     '🟠 본문' + '\n' + content_body + '\n\n' + \
+        #     '🟠 댓글' + '\n' + comment_body
 
-        print(f'{filename} 생성')
-        util.SaveFile(filename, report)
+        # print(f'{filename} 생성')
+        # util.SaveFile(filename, report)
+
+        # 스크린샷 파일 생성
+        htmlFile = f'{path}{sCreated_at}.html'
+        ImgFile = f'{sCreated_at}_screenshot.jpg'
+        print(f'{path}{ImgFile} 화면 생성')
+        # util.SaveFile(htmlFile, res.text)
+
+        util.HtmlToImageWithSelenium(
+            header_url=util.getCookiesFromDomain(
+                'kidsnote', ''), url=detail_url, output_file='1.png')
+        # hti = Html2Image(output_path=path)
+        # hti.screenshot(html_file=htmlFile, size=[2000, 2000], save_as=ImgFile)
+
+        exit()
 
         # 동영상 다운로드
         video_section = soup.find('div', class_='video-section')

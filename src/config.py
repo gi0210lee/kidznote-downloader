@@ -13,8 +13,6 @@ KIDSNOTE_LANG = {"Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"}
 KIDSNOTE_COOKIE = {"Cookie": str(util.getCookiesFromDomain(
     'kidsnote', '')).replace('{', '').replace('}', '').replace("'", '').replace(',', ';').replace(': ', '=')}
 
-print(KIDSNOTE_COOKIE)
-
 CUSTOM_HEADERS = dict(KIDSNOTE_LANG, **KIDSNOTE_COOKIE)
 
 OUTPUT_ROOT = 'output/'
