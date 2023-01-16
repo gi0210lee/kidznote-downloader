@@ -65,6 +65,8 @@ def ScriptingReports():
         driver.get(albums_page_url)
         time.sleep(config.CONST_DELAY_TIME)
 
+        soup = BeautifulSoup(driver.page_source, 'html.parser')
+
         # 알림장 페이지 내 상세정보
         album_list = soup.find(
             'div', class_='report-list-wrapper').find_all('a')

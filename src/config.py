@@ -3,7 +3,7 @@ import json
 
 OUTPUT_ROOT = 'output/'
 OUTPUT_ALBUMS = OUTPUT_ROOT + 'albums/'
-OUTPUT_REPORTS = OUTPUT_ROOT + 'report/'
+OUTPUT_REPORTS = OUTPUT_ROOT + 'reports/'
 
 BASE_URL = 'https://www.kidsnote.com/'
 REPORT_URL = BASE_URL + 'reports/'
