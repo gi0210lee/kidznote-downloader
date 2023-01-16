@@ -3,7 +3,7 @@ from src import scriptingReports
 
 
 def main():
-    scriptingAlbums.ScriptingAlbums()
+    scriptingReports.ScriptingReports()
 
 
 if __name__ == "__main__":

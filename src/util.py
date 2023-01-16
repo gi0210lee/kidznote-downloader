@@ -1,5 +1,4 @@
 import os
-import browser_cookie3
 import time
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
@@ -53,20 +52,6 @@ def getCookiesFromDomain(domain, cookieName=''):
 
 
 def HtmlToImageWithSelenium(header_url, url, output_file):
-    # options = webdriver.ChromeOptions()
-    # options.add_argument('headless')
-    # options.add_argument(
-    #     'User-Agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36')
-    # options.add_argument(
-    #     'Accept-Language=ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7')
-    # options.add_argument('Cookie=sessionid=v8but91g9z6mpvwijnrov1nh7evwlqpd; _hjSessionUser_3251788=eyJpZCI6IjNmZDdjZjE2LTBmN2ItNTlkMy05MDM2LTAzNGE5OGFjZjA2YSIsImNyZWF0ZWQiOjE2NzMzOTgwOTQ5ODcsImV4aXN0aW5nIjp0cnVlfQ==; csrftoken=GS4bUiUxOyMMQHoMFNj2Z8WdFv0eeYouZfU7kWnY4iHD7NFJs1S7lDelP2CPCscB; _gid=GA1.2.109501274.1673398107; current_user=dayomi; _ga_6HBPNX8FC2=GS1.1.1673419131.3.0.1673419137.0.0.0; _ga=GA1.2.687922305.1673398094')
-
-    # driver = webdriver.Chrome(
-    #     ChromeDriverManager().install(), options=options)
-    # driver.implicitly_wait(10)
-    # driver.get(url)
-    # driver.get_screenshot_as_file(output_file)
-
     driver = webdriver.Chrome()
     driver.get('https://www.kidsnote.com/login')
     driver.implicitly_wait(5)

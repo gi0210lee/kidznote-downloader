@@ -1,22 +1,20 @@
 import os
 import json
-from src import util
-# import util
-
-# with open('config.json') as f:
-#     config = json.load(f)
-
-# CUSTOM_HEADERS_ORIGIN = config['REQUEST_HEADER']
-
-KIDSNOTE_LANG = {"Accept-Language": "ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7"}
-# 쿠키 가져오기 더 나은 방법이 있을텐데 바쁘니 패스
-KIDSNOTE_COOKIE = {"Cookie": str(util.getCookiesFromDomain(
-    'kidsnote', '')).replace('{', '').replace('}', '').replace("'", '').replace(',', ';').replace(': ', '=')}
-
-CUSTOM_HEADERS = dict(KIDSNOTE_LANG, **KIDSNOTE_COOKIE)
 
 OUTPUT_ROOT = 'output/'
+OUTPUT_ALBUMS = OUTPUT_ROOT + 'albums/'
+OUTPUT_REPORTS = OUTPUT_ROOT + 'report/'
 
-BASE_URL = 'https://www.kidsnote.com'
-REPORT_URL = BASE_URL + '/reports' + '/'
-ALNUMS_URL = BASE_URL + '/albums' + '/'
+BASE_URL = 'https://www.kidsnote.com/'
+REPORT_URL = BASE_URL + 'reports/'
+ALNUMS_URL = BASE_URL + 'albums/'
+LOGIN_URL = BASE_URL + 'login'
+OLD_VER_URL = BASE_URL + 'home/'
+
+CONST_DELAY_TIME = 1
+
+with open('config.json') as f:
+    json_obj = json.load(f)
+
+USERNAME = json_obj['username']
+PASSWORD = json_obj['password']
