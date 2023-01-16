@@ -123,5 +123,5 @@ def ScriptingReports():
                     print(f'{fullPath} 다운로드 완료')
             print(f'이미지 다운로드 완료')
 
-        driver.quit()
-        print(f'알림장 다운로더 종료')
+    driver.quit()
+    print(f'알림장 다운로더 종료')
