@@ -13,6 +13,12 @@ OLD_VER_URL = BASE_URL + 'home/'
 
 CONST_DELAY_TIME = 1
 
+# create to config.json
+# {
+#   "username": "",
+#   "password": ""
+# }
+
 with open('config.json') as f:
     json_obj = json.load(f)
 
